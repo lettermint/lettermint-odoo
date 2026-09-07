@@ -1,0 +1,19 @@
+<odoo>
+    <record id="test_email_form" model="ir.ui.view">
+        <field name="name">lettermint.test.email.form</field>
+        <field name="model">lettermint.test.email</field>
+        <field name="arch" type="xml">
+            <form string="Send a test email">
+                <group>
+                    <field name="mail_server_id" readonly="1"/>
+                    <field name="email_from"/>
+                    <field name="email_to"/>
+                </group>
+                <footer>
+                    <button name="action_send" string="Send Email" type="object" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
