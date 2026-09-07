@@ -1,0 +1,37 @@
+<odoo>
+    <record id="ir_mail_server_form" model="ir.ui.view">
+        <field name="name">ir.mail.server.lettermint</field>
+        <field name="model">ir.mail_server</field>
+        <field name="inherit_id" ref="base.ir_mail_server_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="attributes">
+                <attribute name="invisible">smtp_authentication in ('cli', 'lettermint')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='smtp_host']" position="attributes">
+                <attribute name="required">smtp_authentication not in ('cli', 'lettermint')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='smtp_port']" position="attributes">
+                <attribute name="required">smtp_authentication not in ('cli', 'lettermint')</attribute>
+            </xpath>
+            <xpath expr="//notebook" position="before">
+                <group string="Lettermint API" invisible="smtp_authentication != 'lettermint'" groups="base.group_system">
+                    <div class="alert alert-info" role="alert" colspan="2">
+                        A Lettermint account is required. Service fees can apply.
+                        Email addresses, content, headers, and attachments are sent to Lettermint.
+                        The API token is stored in the Odoo database. Protect database backups.
+                    </div>
+                    <field name="lettermint_token" password="True" required="smtp_authentication == 'lettermint' and active"/>
+                    <field name="lettermint_route" placeholder="Project default outbound route"/>
+                    <field name="lettermint_consent"/>
+                </group>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="action_lettermint_test_email" string="Send Test Email" type="object"
+                        invisible="smtp_authentication != 'lettermint' or not active" groups="base.group_system"/>
+            </xpath>
+            <xpath expr="//button[@name='action_retrieve_max_email_size']" position="attributes">
+                <attribute name="invisible">smtp_authentication == 'lettermint'</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

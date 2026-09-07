@@ -1,0 +1,40 @@
+name: lettermint-odoo-${ODOO_MAJOR:-19}
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: local-development-only
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U odoo -d postgres]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+  odoo:
+    image: odoo:${ODOO_MAJOR:-19}.0
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: local-development-only
+      ODOO_DEMO_PASSWORD: ${ODOO_DEMO_PASSWORD:-}
+    ports:
+      - "127.0.0.1:${ODOO_PORT:-8069}:8069"
+    volumes:
+      - ./.build/${ODOO_MAJOR:-19}:/mnt/extra-addons:ro
+      - odoo-data:/var/lib/odoo
+    healthcheck:
+      test: [CMD, python3, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8069/web/login', timeout=5)"]
+      interval: 2s
+      timeout: 6s
+      retries: 60
+      start_period: 5s
+    command: [odoo, --db-filter=^lettermint_demo$, --no-database-list, --max-cron-threads=0]
+volumes:
+  db-data:
+  odoo-data:

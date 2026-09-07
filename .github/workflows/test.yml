@@ -1,0 +1,27 @@
+name: Tests
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  odoo:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['18', '19']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test modules
+        run: scripts/test.sh '${{ matrix.version }}'
+      - name: Test removal
+        run: scripts/test-lifecycle.sh '${{ matrix.version }}'
+      - name: Set up business-flow database
+        run: scripts/setup.sh '${{ matrix.version }}'
+      - name: Test invoices, password resets, and replies
+        run: scripts/test-business.sh '${{ matrix.version }}'
+      - name: Stop services
+        if: always()
+        run: ODOO_MAJOR=${{ matrix.version }} docker compose down

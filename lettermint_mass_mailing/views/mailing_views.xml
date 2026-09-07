@@ -1,0 +1,16 @@
+<odoo>
+    <record id="mailing_form" model="ir.ui.view">
+        <field name="name">mailing.mailing.lettermint</field>
+        <field name="model">mailing.mailing</field>
+        <field name="inherit_id" ref="mass_mailing.view_mail_mass_mailing_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='mail_server_id']" position="after">
+                <field name="lettermint_api_server" invisible="1"/>
+                <div class="alert alert-info" role="alert" invisible="not lettermint_api_server">
+                    This campaign uses the route set on the selected Lettermint server.
+                    Odoo controls tracking and unsubscribe links. Lettermint delivery and bounce events are not synchronized.
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
